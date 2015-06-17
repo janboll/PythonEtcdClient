@@ -44,7 +44,7 @@ class ServerOps(CommonOps):
         :rtype: :class:`etcd.response.ResponseV2`
         """
 
-        fq_path = '/members'
+        fq_path = '/machines'
         response = self.client.send(2, 'get', fq_path, allow_reconnect=False, return_raw=True)
 
         return [x.strip() for x in response.text.split(',')]
