@@ -42,7 +42,7 @@ class ServerOps(CommonOps):
         :rtype: :class:`etcd.response.ResponseV2`
         """
 
-        fq_path = '/machines'
+        fq_path = '/members'
         response = self.client.send(2, 'get', fq_path, allow_reconnect=False)
 
         for machine in response.node.children:
