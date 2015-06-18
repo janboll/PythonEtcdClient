@@ -1,15 +1,10 @@
-import pytz
-import simplejson
 
 import etcd.exceptions
 
 from dateutil.parser import parse
 from dateutil.tz import tzutc
 
-from collections import namedtuple
 from os.path import basename
-from pytz import timezone
-from datetime import datetime, timedelta
 
 A__PREVNODE = '_(pnode)'
 
@@ -221,7 +216,7 @@ class ResponseV2(object):
     def __init__(self, response, request_verb, request_path):
         try:
             response_raw = response.json()
-        except simplejson.JSONDecodeError:
+        except ValueError:
             # Bug #1120: Wait will timeout with a JSON-message of zero-length.
             if response.text == '':
                 raise etcd.exceptions.EtcdEmptyResponseError()
