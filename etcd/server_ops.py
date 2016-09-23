@@ -1,5 +1,7 @@
 import requests
 
+import json
+
 from etcd.common_ops import CommonOps
 from etcd.response import ResponseV2 
 from etcd.compat import parse_qsl
@@ -42,11 +44,10 @@ class ServerOps(CommonOps):
         :rtype: :class:`etcd.response.ResponseV2`
         """
 
-        fq_path = self.get_fq_node_path('/_etcd/machines')
-        response = self.client.send(2, 'get', fq_path, allow_reconnect=False)
+        fq_path = '/machines'
+        response = self.client.send(2, 'get', fq_path, allow_reconnect=False, return_raw=True)
 
-        for machine in response.node.children:
-            yield parse_qsl(machine.value)
+        return [x.strip() for x in response.text.split(',')]
 
     def get_dashboard_url(self):
         """Return the URL for the dashboard on the server currently connected-

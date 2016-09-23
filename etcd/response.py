@@ -1,12 +1,10 @@
-import pytz
-import simplejson
 
 import etcd.exceptions
 
-from collections import namedtuple
+from dateutil.parser import parse
+from dateutil.tz import tzutc
+
 from os.path import basename
-from pytz import timezone
-from datetime import datetime, timedelta
 
 A__PREVNODE = '_(pnode)'
 
@@ -72,15 +70,7 @@ class ResponseV2BasicNode(object):
         else:
             self.ttl = node['ttl']
 
-            first_part = expiration[:19]
-            naive_dt = datetime.strptime(first_part, '%Y-%m-%dT%H:%M:%S')
-            tz_offset_hours = int(expiration[-5:-3])
-            tz_offset_minutes = int(expiration[-2:])
-
-            tz_offset = timedelta(seconds=(tz_offset_hours * 60 * 60 + 
-                                           tz_offset_minutes * 60))
-
-            self.expiration = (naive_dt + tz_offset).replace(tzinfo=pytz.UTC)
+            self.expiration = parse(expiration).astimezone(tzutc())
             self.ttl_phrase = ('%d: %s' % (self.ttl, self.expiration))
 
         # <<
@@ -226,7 +216,7 @@ class ResponseV2(object):
     def __init__(self, response, request_verb, request_path):
         try:
             response_raw = response.json()
-        except simplejson.JSONDecodeError:
+        except ValueError:
             # Bug #1120: Wait will timeout with a JSON-message of zero-length.
             if response.text == '':
                 raise etcd.exceptions.EtcdEmptyResponseError()

@@ -169,8 +169,8 @@ class Client(object):
 #        if self.__version.startswith('0.2') is False:
 #            raise ValueError("We don't support an etcd version older than 0.2.0 .")
 
-        self.__machines = [[dict(machine_info)['etcd'], None]
-                            for machine_info
+        self.__machines = [[x, None]
+                            for x
                             in self.server.get_machines()]
 
         _logger.debug("Cluster machines: %s", self.__machines)
